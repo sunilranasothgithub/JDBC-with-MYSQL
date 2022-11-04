@@ -1,0 +1,94 @@
+package com.sunil.jdbc;
+
+// WAP TO PRINT THE DATA OF A PERSON WITH A SPECIFIC ID  FROM THE SQL TABLE WITH THE HELP OF JDBC.
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+public class Program2 {
+	
+//	static resources objects declared outside the try block instead inside main. so that we can close all the resources . 
+	private static FileInputStream inputStream;
+    private static Connection connection;
+    private static Statement statement;
+    private static ResultSet result;
+	
+//    create a static method called close() to close all the resources 
+    static void close() throws SQLException, IOException {
+    	if (result!=null) {
+			result.close();
+		}
+    	if(statement!=null) {
+    		statement.close();
+    	}
+    	if(connection!=null) {
+    		connection.close();
+    	}
+    	if(inputStream!=null) {
+    		inputStream.close();
+    	}
+		
+	}
+    
+    
+    public static void main(String[] args) {
+
+//      establish a connection btwn java code and the properties file
+		 try {
+     
+     //file path needs to be copy and pasted in the place of FileInputStream("file path/location");
+			inputStream = new FileInputStream("C:\\Users\\Sunil\\eclipse-workspace\\jdbc\\src\\com\\sunil\\utility\\mysqlinfo.properties");
+		
+
+//		 since we are dealing with the properties file we need to create the object of the properties
+		 Properties properties = new Properties();
+
+//		 load the properties file
+		 properties.load(inputStream);
+		 
+//		 get the url, username & password
+		 
+		 String url = properties.getProperty("url");
+		 String username = properties.getProperty("username");
+		 String password = properties.getProperty("password");
+		 
+//		 write your program
+		 
+		 connection = DriverManager.getConnection(url, username, password);
+		 statement = connection.createStatement();
+		 result = statement.executeQuery("SELECT * FROM employee WHERE id=2");
+		 
+		 if(result.next()) {
+			System.out.println(result.getString(2)+" "+result.getString(3)); 
+		 }
+		 
+		 
+		 
+		} catch (FileNotFoundException e) {  // these exception cannot be interchanged coz IOexception is the parent exception of filenotfoundexception, incase if u do so it will become unreachable statement 
+				e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+				e.printStackTrace();
+		} 
+		 
+		 finally {
+			 try {
+				close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		 }
+		 
+		 
+	}
+}
