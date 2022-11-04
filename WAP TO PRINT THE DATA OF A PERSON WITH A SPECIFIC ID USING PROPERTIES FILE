@@ -59,7 +59,7 @@ public class Program2 {
 		 String username = properties.getProperty("username");
 		 String password = properties.getProperty("password");
 		 
-//		 write your program
+//		 write your program here to get the connection ,create statment & execute the Query.
 		 
 		 connection = DriverManager.getConnection(url, username, password);
 		 statement = connection.createStatement();
