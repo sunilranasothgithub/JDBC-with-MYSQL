@@ -1,0 +1,85 @@
+package com.sunil.jdbc;
+
+//WAP TO INSERT A ROW INTO THE SQL TABLE
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+class PrintTables2{
+	static void displayEmployee(ResultSet result) throws SQLException {
+		while(result.next()) {
+		System.out.printf("%-3s %-9s %-20s %-10s\n",result.getString(1),result.getString(2),result.getString(3),result.getString(4));
+	   }
+	}	
+}
+
+
+public class Program5 {
+	
+	private static FileInputStream inputStream;
+	private static Connection connection;
+	private static Statement statement;
+	private static ResultSet result;
+	
+	private final static String QUERY="INSERT INTO `employee` (`id`,`name`,`email`,`salary`) VALUES(4,'Charlie','Charlie@gmail.com','400')";
+	
+	static void close() throws SQLException, IOException {
+		if(result!=null) result.close();
+		if(statement!=null) statement.close();
+		if(connection!=null) connection.close();
+		if(inputStream!=null) inputStream.close();
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		try {
+			
+		inputStream = new FileInputStream("C:\\Users\\Sunil\\eclipse-workspace\\jdbc\\src\\com\\sunil\\utility\\mysqlinfo.properties");	
+			
+ 		Properties properties = new Properties();
+ 		properties.load(inputStream);
+ 		
+ 		String url =properties.getProperty("url");
+ 		String username=properties.getProperty("username");
+ 		String password=properties.getProperty("password");
+ 		
+ 		connection=DriverManager.getConnection(url, username, password);
+ 		statement=connection.createStatement();
+ 		result=statement.executeQuery("SELECT * FROM `employee`");
+ 		PrintTables2.displayEmployee(result);
+ 		
+ 		statement.executeUpdate(QUERY);
+ 		System.out.println();
+ 		System.out.println("-----After Update------");
+ 		System.out.println();
+ 		
+ 		result=statement.executeQuery("SELECT * FROM `employee`");
+ 		PrintTables2.displayEmployee(result);
+		
+		
+	
+		}catch(IOException e) {
+			e.printStackTrace();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+ 		
+		finally {
+			try {
+				close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+}
