@@ -1,0 +1,105 @@
+package com.sunil.jdbc;
+
+//WAP TO INSERT MULTIPLE ROWS INTO THE SQL TABLE AT ONE SHOT
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+
+class PrintTables3{
+	static void displayEmployee(ResultSet result) throws SQLException {
+		while(result.next()) {
+			System.out.printf("%-3s %-9s %-20s %-10s\n",result.getString(1),result.getString(2),result.getString(3),result.getString(4));
+		}
+	}
+}
+
+public class Program6 {
+	
+	private static FileInputStream inputStream;
+	private static Connection connection;
+	private static Statement statement;
+	private static ResultSet result;
+	
+	static void close() throws SQLException, IOException {
+		if(result!=null) result.close();
+		if(statement!=null) statement.close();
+		if(connection!=null) connection.close();
+		if(inputStream!=null) inputStream.close();
+	}
+	
+	public static void main(String[] args) {
+		
+		try {
+		    inputStream = new FileInputStream("C:\\Users\\Sunil\\eclipse-workspace\\jdbc\\src\\com\\sunil\\utility\\mysqlinfo.properties");
+			Properties properties = new Properties();
+			properties.load(inputStream);
+			
+			String url = properties.getProperty("url");
+			String username = properties.getProperty("username");
+			String password = properties.getProperty("password");
+			
+			connection = DriverManager.getConnection(url, username, password);
+			statement = connection.createStatement();
+			result = statement.executeQuery("select * from employee");
+			PrintTables3.displayEmployee(result);
+			System.out.println();
+			
+			System.out.println("-------After Update-------");
+			
+			System.out.println();
+			
+//	Write your multiple queries  here
+			
+			String q1 = "INSERT into `employee`(`id`,`name`,`email`,`salary`)VALUES(5,'ram','ram@gmail.com','500')";
+			String q2 = "INSERT into `employee`(`id`,`name`,`email`,`salary`)VALUES(6,'sita','sita@gmail.com','600')";
+			String q3 = "INSERT into `employee`(`id`,`name`,`email`,`salary`)VALUES(7,'ravan','ravan@gmail.com','700')";
+			
+//	Add the above queries into batch using addBatch() method		
+			
+			statement.addBatch(q1);                   //one batch is created and q1 is added
+			statement.addBatch(q2);                   //q2 is added into the same batch created at the time of q1           
+			statement.addBatch(q3);                   //q3 is added etc.. and so on.. we can add n queries in to the batch file & execute at one shot
+			
+//	To execute the batch file use executeBatch() method
+			
+			statement.executeBatch();
+			
+//	To see whether the queries have entered into table 
+			
+			result = statement.executeQuery("select * from employee");
+			PrintTables3.displayEmployee(result);
+			
+			
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		finally {
+			try {
+				close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+	}
+
+}
