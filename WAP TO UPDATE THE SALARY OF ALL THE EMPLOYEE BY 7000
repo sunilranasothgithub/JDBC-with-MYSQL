@@ -1,0 +1,84 @@
+package com.sunil.jdbc;
+
+//WAP TO UPDATE THE SALARY OF ALL THE EMPLOYEE BY 7000
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+class PrintTables{
+	static void displayEmployee(ResultSet result) throws SQLException {
+		while(result.next()) {
+			System.out.printf("%-3s %-9s %-20s %-10s\n", result.getInt(1),result.getString(2),result.getString(3),result.getShort(4));
+		}
+	}
+}
+
+public class Program3 {
+    
+	private static FileInputStream inputStream;
+	private static Connection connection;
+	private static Statement statement;
+	private static ResultSet result;
+
+	private final static String QUERY =  "UPDATE employee SET salary =salary + 7000";
+	
+	static void close() throws SQLException, IOException {
+		if (result != null) result.close();
+		if (statement != null) statement.close();
+		if (connection != null) connection.close();
+		if (inputStream != null) inputStream.close();
+		
+	}
+	
+	
+	public static void main(String[] args) {
+    
+		
+		try {
+	
+	inputStream = new FileInputStream("C:\\Users\\Sunil\\eclipse-workspace\\jdbc\\src\\com\\sunil\\utility\\mysqlinfo.properties");
+	Properties properties = new Properties();
+	properties.load(inputStream);
+	
+	String url = properties.getProperty("url");
+	String username = properties.getProperty("username");	
+	String password = properties.getProperty("password");
+	
+	connection = DriverManager.getConnection(url, username, password);
+    statement  = connection.createStatement();
+	result = statement.executeQuery("select * from employee");
+	PrintTables.displayEmployee(result);
+	statement.executeUpdate(QUERY);
+	System.out.println();	
+	System.out.println("-----------After Update-----------");
+	System.out.println();
+	result = statement.executeQuery("select * from employee");
+	PrintTables.displayEmployee(result);
+	
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	
+	}
+
+}
